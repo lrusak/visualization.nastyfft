@@ -1,0 +1,59 @@
+# XBMC Media Center language file
+# Addon Name: NastyFFT
+# Addon id: visualization.nastyfft
+# Addon Provider: yodor@developer.bg
+msgid ""
+msgstr ""
+"Project-Id-Version: XBMC Main\n"
+"Report-Msgid-Bugs-To: http://trac.xbmc.org/\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: XBMC Translation Team\n"
+"Language-Team: English (http://www.transifex.com/projects/p/xbmc-main/language/en/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#settings labels
+
+msgctxt "#30000"
+msgid "Scale"
+msgstr ""
+
+msgctxt "#30001"
+msgid "Flashlight"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Transient Mode"
+msgstr ""
+
+msgctxt "#30003"
+msgid "Moving Camera"
+msgstr ""
+
+msgctxt "#30004"
+msgid "Eye Y"
+msgstr ""
+
+msgctxt "#30005"
+msgid "Brick Z-spacing"
+msgstr ""
+
+msgctxt "#30006"
+msgid "Brick Shinyness"
+msgstr ""
+
+msgctxt "#30007"
+msgid "Floor Rotation X"
+msgstr ""
+
+msgctxt "#30008"
+msgid "Eye Z"
+msgstr ""
+
+msgctxt "#30009"
+msgid "Flat Mode"
+msgstr ""

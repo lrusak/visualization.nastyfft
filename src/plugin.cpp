@@ -1,4 +1,4 @@
-#include "../../addons/include/xbmc_vis_dll.h"
+#include "kodi/xbmc_vis_dll.h"
 
 #include "nastyfft.h"
 
@@ -15,25 +15,22 @@ NastyFFT plugin;
 
 char **g_presets=0;
 
+extern "C"
+{
 
 //-- Create -------------------------------------------------------------------
 // Called on load. Addon should fully initalize or return error status
 //-----------------------------------------------------------------------------
-ADDON_STATUS Create(void* hdl, void* props)
+ADDON_STATUS ADDON_Create(void* hdl, void* props)
 {
-  
-  printf("Create\n");
-	
   if (!props)
-    return STATUS_UNKNOWN;
+    return ADDON_STATUS_UNKNOWN;
 
   VIS_PROPS* visProps = (VIS_PROPS*)props;
 
   plugin.setSize(visProps->width, visProps->height);
- 
 
-  return STATUS_NEED_SETTINGS;
-  
+  return ADDON_STATUS_NEED_SETTINGS;
 }
 
 
@@ -41,20 +38,16 @@ ADDON_STATUS Create(void* hdl, void* props)
 // This dll must cease all runtime activities
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" 
-void Stop()
+void ADDON_Stop()
 {
-   printf("Stop\n");
 }
 
 //-- Destroy ------------------------------------------------------------------
 // Do everything before unload of this add-on
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" 
-void Destroy()
+void ADDON_Destroy()
 {
-  printf("Destroy\n");
   if (g_presets) {
 	  free(g_presets);
 	  g_presets = 0;
@@ -67,21 +60,17 @@ void Destroy()
 // Called once per frame. Do all rendering here.
 //-----------------------------------------------------------------------------
 
-extern "C" 
 void Render()
 {
   plugin.render();
 }
 
-extern "C" 
 void Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, const char* szSongName)
 {
 
 }
 
-
-extern "C" 
-void AudioData(const short* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
+void AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
 {
   plugin.scopeEvent(pFreqData, iFreqDataLength);
 }
@@ -90,7 +79,6 @@ void AudioData(const short* pAudioData, int iAudioDataLength, float *pFreqData, 
 //-- GetInfo ------------------------------------------------------------------
 // Tell XBMC our requirements
 //-----------------------------------------------------------------------------
-extern "C" 
 void GetInfo(VIS_INFO* pInfo)
 {
   pInfo->bWantsFreq = true;
@@ -101,7 +89,7 @@ void GetInfo(VIS_INFO* pInfo)
 //-- GetSubModules ------------------------------------------------------------
 // Return any sub modules supported by this vis
 //-----------------------------------------------------------------------------
-extern "C" unsigned int GetSubModules(char ***names)
+unsigned int GetSubModules(char ***names)
 {
   return 0; // this vis supports 0 sub modules
 }
@@ -109,16 +97,12 @@ extern "C" unsigned int GetSubModules(char ***names)
 //-- OnAction -----------------------------------------------------------------
 // Handle XBMC actions such as next preset, lock preset, album art changed etc
 //-----------------------------------------------------------------------------
-extern "C" 
 bool OnAction(long flags, const void *param)
 {
-  printf("OnAction\n");
-  
   bool ret = false;
   
   if (flags == VIS_ACTION_LOAD_PRESET && param)
   {
-	printf("VIS_ACTION_LOAD_PRESET\n");
     int pindex = *((int *)param);
 	plugin.loadPreset(pindex);
 	
@@ -163,7 +147,6 @@ bool OnAction(long flags, const void *param)
 //-- GetPresets ---------------------------------------------------------------
 // Return a list of presets to XBMC for display
 //-----------------------------------------------------------------------------
-extern "C" 
 unsigned int GetPresets(char ***preset_names)
 {
   vector<string> names;
@@ -192,20 +175,16 @@ unsigned int GetPresets(char ***preset_names)
 //-- GetPreset ----------------------------------------------------------------
 // Return the index of the current playing preset
 //-----------------------------------------------------------------------------
-extern "C" 
 unsigned GetPreset()
 {
-  printf("GetPreset\n");
   return plugin.presetIndex();
 }
 
 //-- IsLocked -----------------------------------------------------------------
 // Returns true if this add-on use settings
 //-----------------------------------------------------------------------------
-extern "C" 
 bool IsLocked()
 {
-  printf("Is Locked\n");
   return false;
 }
 
@@ -214,10 +193,8 @@ bool IsLocked()
 // Returns true if this add-on use settings
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" 
-bool HasSettings()
+bool ADDON_HasSettings()
 {
-  printf("Has Settings\n");
   return true;
 }
 
@@ -225,21 +202,17 @@ bool HasSettings()
 // Returns the current Status of this visualisation
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" 
-ADDON_STATUS GetStatus()
+ADDON_STATUS ADDON_GetStatus()
 {
-  printf("GetStatus\n");
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
 }
 
 //-- GetSettings --------------------------------------------------------------
 // Return the settings for XBMC to display
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" unsigned int GetSettings(StructSetting ***sSet)
+unsigned int ADDON_GetSettings(ADDON_StructSetting ***sSet)
 {
-  printf("GetSettings\n");
-   
   return 0;
 }
 
@@ -248,29 +221,23 @@ extern "C" unsigned int GetSettings(StructSetting ***sSet)
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
 
-extern "C" void FreeSettings()
+void ADDON_FreeSettings()
 {
-  printf("FreeSettings\n");
 }
 
 //-- SetSetting ---------------------------------------------------------------
 // Set a specific Setting value (called from XBMC)
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" ADDON_STATUS SetSetting(const char *strSetting, const void* value)
+ADDON_STATUS ADDON_SetSetting(const char *strSetting, const void* value)
 {
-  printf("SetSettings\n");
-	
-  if (!strSetting || !value) return STATUS_UNKNOWN;
-
-  printf("Setting: %s\n", strSetting);
+  if (!strSetting || !value) return ADDON_STATUS_UNKNOWN;
 
   ScenePreset *priv = plugin.scenePreset();
    
   if (strcmp(strSetting, "scale")==0) {
 	  int val = *(int*)value;
-	  printf("Scale: %d\n", val);
-	  priv->scale = 1+val ;
+	  priv->scale = 1+val;
   }
   else if (strcmp(strSetting, "invert")==0) {
 	  priv->cinvert = *(bool*)value;
@@ -286,35 +253,35 @@ extern "C" ADDON_STATUS SetSetting(const char *strSetting, const void* value)
   }
   else if (strcmp(strSetting, "eye_y")==0) {
 	  int val = *(int*)value;
-	  printf("Cam-Y: %d\n", val);
 	  priv->cam_coords.y =  val;
 	  
   }
   else if (strcmp(strSetting, "eye_z")==0) {
 	  int val = *(int*)value;
-	  printf("Cam-Z: %d\n", val);
 	  priv->cam_coords.z = val ;
 	  
   }
   else if (strcmp(strSetting, "brick_space_z")==0) {
 	  int val = *(int*)value;
-	  printf("brick_space_z: %d\n", val);
 	  priv->step_z = val / 10.0f;
   }
   else if (strcmp(strSetting, "brick_shiness")==0) {
 	  int val = *(int*)value;
-	  printf("brick_shiness: %d\n", val);
 	  priv->shiness = val / 100.0f;
   }
   else if (strcmp(strSetting, "floor_rotate_x")==0) {
 	
 	  int val = *(int*)value;
-	  printf("floor_rotate_x: %d\n", val);
 	  priv->rot_x = 0 + (val*36);
   }
   else {
-	return STATUS_UNKNOWN;
+	return ADDON_STATUS_UNKNOWN;
 	
   }
-  return STATUS_OK;
+  return ADDON_STATUS_OK;
+}
+
+void ADDON_Announce(const char *flag, const char *sender, const char *message, const void *data)
+{
+}
 }

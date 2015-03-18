@@ -6,12 +6,12 @@
   provider-name="yodor@developer.bg">
   <extension
     point="xbmc.player.musicviz"
-    library_linux="nastyfft.vis"
-    library_osx="nastyfft.vis" />
+    library_linux="visualization.nastyfft.so"
+    library_osx="visualization.nastyfft.dylib" />
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Visualisation showing a nice FFT scopes. Presets and settings present to customize the look.</summary>
     <description lang="en">Visualizator FFT</description>
     <disclaimer></disclaimer>
-    <platform>linux osx ios</platform>
+    <platform>linux osx</platform>
   </extension>
 </addon>

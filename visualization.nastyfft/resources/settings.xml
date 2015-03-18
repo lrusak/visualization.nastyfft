@@ -1,0 +1,14 @@
+<settings>
+<setting id="scale" label="30000" type="slider" range="1,1,10" option="int" default="6"/>
+
+<setting id="invert" label="30001" type="bool" default="false" />
+<setting id="transient" label="30002" type="bool" default="false" />
+<setting id="flatten" label="30009" type="bool" default="false" />
+<setting id="cammove" label="30003" type="bool" default="false" />
+
+<setting id="eye_y" label="30004" type="slider" range="0,1,20" option="int" default="3" />
+<setting id="eye_z" label="30008" type="slider" range="0,1,20" option="int" default="16" />
+<setting id="brick_space_z" label="30005" type="slider" range="0,1,20" option="int" default="16" /> />
+<setting id="brick_shiness" label="30006" type="slider" range="0,1,10" option="int" default="6" />
+<setting id="floor_rotate_x" label="30007" type="slider" range="0,1,10" option="int" default="0" />
+</settings>

@@ -22,8 +22,6 @@ using namespace std;
 
 NastyFFT::NastyFFT() : obj(0), preset_index(0)
 {
-	printf("NastyFFT: CTOR ... \n");
-	
 	obj = gluNewQuadric();
 	
 	gluQuadricNormals(obj, GLU_SMOOTH);
@@ -36,20 +34,12 @@ NastyFFT::NastyFFT() : obj(0), preset_index(0)
 		}
 	}
 
-	printf("NastyFFT: creating new ScenePreset\n");
-
-	
-	
 	loadPreset(preset_index);
-
-	printf("NastyFFT: CTOR_Finished\n");
-
 	
 }
 void NastyFFT::loadPreset(int pos)
 {
 	
-  cout << "NastyFFT: Loading PresetIndex: " << pos << endl;
   preset_index = 0;
   
   switch (pos)
@@ -143,8 +133,6 @@ ScenePreset* NastyFFT::scenePreset()
 NastyFFT::~NastyFFT()
 {
 
-	printf("NastyFFT: DTOR_Finished\n");
-	
 	if (obj) {
 	  gluDeleteQuadric(obj);
 	  obj=0;
@@ -259,7 +247,6 @@ void NastyFFT::scopeEvent(float *data,  int bands)
 
 void NastyFFT::initializeGL()
 {
-// 	printf("NastyFFT: initializeGL\n");
 	
 	
 	
@@ -313,7 +300,6 @@ void NastyFFT::initializeGL()
 void NastyFFT::resizeGL(int width, int height)
 {
 
-// 	printf("NastyFFT: resizeGL (%d,%d)\n", width, height);
 	
 	GLdouble defFOVY = 60.0; // field-of-view in degrees in up direction
 
