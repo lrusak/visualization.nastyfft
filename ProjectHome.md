@@ -1,0 +1,1 @@
+NastyFFT - XBMC OpenGL Visualization Plugin. Supports presets and style adjustment via settings.
