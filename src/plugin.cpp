@@ -82,7 +82,7 @@ void AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, 
 void GetInfo(VIS_INFO* pInfo)
 {
   pInfo->bWantsFreq = true;
-//   pInfo->iSyncDelay = 0;
+   pInfo->iSyncDelay = 0;
 }
 
 
