@@ -215,7 +215,7 @@ void NastyFFT::scopeEvent(float *data,  int bands)
 
 	  if(val > 0) {
 		
-		val = 10*log10(val/(65535.0f));
+		val = 10*log10(val*1000);
 		val/=priv.scale;
 		if (val<0)val=0;
 		
