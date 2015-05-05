@@ -330,8 +330,8 @@ void NastyFFT::setupCamera()
 	glLightfv(GL_LIGHT0,GL_AMBIENT,LightAmbient);
 	glLightfv(GL_LIGHT1,GL_DIFFUSE,LightDiffuse);
 	
-	GLfloat light_position0[] = {(NUM_BANDS*priv.step_x), 30, (SCOPE_DEPTH*priv.step_z), 1 };
-	GLfloat light_position1[] = {(NUM_BANDS*priv.step_x), 30, (SCOPE_DEPTH*priv.step_z)*2, 1 };
+	GLfloat light_position0[] = {(float)(NUM_BANDS*priv.step_x), 30, (SCOPE_DEPTH*priv.step_z), 1 };
+	GLfloat light_position1[] = {(float)(NUM_BANDS*priv.step_x), 30, (SCOPE_DEPTH*priv.step_z)*2, 1 };
 
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
 	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
