@@ -2,7 +2,7 @@ project(visualization.nastyfft)
 
 cmake_minimum_required(VERSION 2.6)
 
-find_package(kodi REQUIRED)
+find_package(Kodi REQUIRED)
 find_package(OpenGL REQUIRED)
 
 include_directories(${OpenGL_INCLUDE_DIR}
