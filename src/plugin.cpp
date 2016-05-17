@@ -1,4 +1,4 @@
-#include "kodi/xbmc_vis_dll.h"
+#include "xbmc_vis_dll.h"
 
 #include "nastyfft.h"
 
