@@ -11,6 +11,9 @@ include_directories(${OpenGL_INCLUDE_DIR}
 set(NASTY_SOURCES src/nastyfft.cpp
                   src/plugin.cpp)
 
+set(NASTY_HEADERS src/scenepreset.h
+                  src/nastyfft.h)
+
 set(DEPLIBS ${OPENGL_LIBRARIES})
 
 build_addon(visualization.nastyfft NASTY DEPLIBS)
