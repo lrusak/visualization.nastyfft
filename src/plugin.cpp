@@ -26,7 +26,7 @@ ADDON_STATUS ADDON_Create(void* hdl, void* props)
   if (!props)
     return ADDON_STATUS_UNKNOWN;
 
-  VIS_PROPS* visProps = (VIS_PROPS*)props;
+  AddonProps_Visualization* visProps = (AddonProps_Visualization*)props;
 
   plugin.setSize(visProps->width, visProps->height);
 
@@ -38,7 +38,7 @@ ADDON_STATUS ADDON_Create(void* hdl, void* props)
 // This dll must cease all runtime activities
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-void ADDON_Stop()
+void Stop()
 {
 }
 
