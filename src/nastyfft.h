@@ -21,7 +21,7 @@ public:
 
 	
 	
-	void scopeEvent(float *, int );
+	void scopeEvent(const float *, int );
 
 	void loadPreset(int pos);
 	int presetIndex();

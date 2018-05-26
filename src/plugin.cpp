@@ -1,4 +1,5 @@
-#include "xbmc_vis_dll.h"
+#include <kodi/addon-instance/Visualization.h>
+#include <kodi/General.h>
 
 #include "nastyfft.h"
 
@@ -8,249 +9,138 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
 using namespace std;
 
-NastyFFT plugin;
-
-
-char **g_presets=0;
-
-extern "C"
+const std::vector<std::string> g_presets =
 {
+  "Standard",
+  "Hero",
+  "Flames"
+};
+
+
+class CVisualizationNastyFFT
+  : public kodi::addon::CAddonBase,
+    public kodi::addon::CInstanceVisualization
+{
+public:
+  NastyFFT plugin;
+
+  virtual ADDON_STATUS Create() override;
+  virtual ADDON_STATUS GetStatus() override;
+  virtual void GetInfo(bool& wantsFreq, int& syncDelay) override;
+  virtual bool Start(int channels, int samplesPerSec, int bitsPerSample, std::string songName) override;
+  virtual void Render() override;
+  virtual void AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength) override;
+  virtual ADDON_STATUS SetSetting(const std::string& settingName, const kodi::CSettingValue& settingValue) override;
+  virtual bool GetPresets(std::vector<std::string>& presets) override;
+  virtual bool LoadPreset(int select) override;
+  virtual int GetActivePreset() override;
+};
 
 //-- Create -------------------------------------------------------------------
 // Called on load. Addon should fully initalize or return error status
 //-----------------------------------------------------------------------------
-ADDON_STATUS ADDON_Create(void* hdl, void* props)
+ADDON_STATUS CVisualizationNastyFFT::Create()
 {
-  if (!props)
-    return ADDON_STATUS_UNKNOWN;
-
-  AddonProps_Visualization* visProps = (AddonProps_Visualization*)props;
-
-  plugin.setSize(visProps->width, visProps->height);
+  plugin.setSize(Width(), Height());
 
   return ADDON_STATUS_NEED_SETTINGS;
 }
 
-
-//-- Stop ---------------------------------------------------------------------
-// This dll must cease all runtime activities
-// !!! Add-on master function !!!
-//-----------------------------------------------------------------------------
-void Stop()
+ADDON_STATUS CVisualizationNastyFFT::GetStatus()
 {
+  return ADDON_STATUS_OK;
 }
 
-//-- Destroy ------------------------------------------------------------------
-// Do everything before unload of this add-on
-// !!! Add-on master function !!!
-//-----------------------------------------------------------------------------
-void ADDON_Destroy()
+void CVisualizationNastyFFT::GetInfo(bool& wantsFreq, int& syncDelay)
 {
-  if (g_presets) {
-	  free(g_presets);
-	  g_presets = 0;
-	}
+  wantsFreq = true;
+  syncDelay = 0;
 }
 
-
+bool CVisualizationNastyFFT::Start(int channels, int samplesPerSec, int bitsPerSample, std::string songName)
+{
+  return true;
+}
 
 //-- Render -------------------------------------------------------------------
 // Called once per frame. Do all rendering here.
 //-----------------------------------------------------------------------------
-
-void Render()
+void CVisualizationNastyFFT::Render()
 {
   plugin.render();
 }
 
-void Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, const char* szSongName)
-{
-
-}
-
-void AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
+void CVisualizationNastyFFT::AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
 {
   plugin.scopeEvent(pFreqData, iFreqDataLength);
 }
 
-
-//-- GetInfo ------------------------------------------------------------------
-// Tell XBMC our requirements
-//-----------------------------------------------------------------------------
-void GetInfo(VIS_INFO* pInfo)
-{
-  pInfo->bWantsFreq = true;
-   pInfo->iSyncDelay = 0;
-}
-
-
-//-- GetSubModules ------------------------------------------------------------
-// Return any sub modules supported by this vis
-//-----------------------------------------------------------------------------
-unsigned int GetSubModules(char ***names)
-{
-  return 0; // this vis supports 0 sub modules
-}
-
-//-- OnAction -----------------------------------------------------------------
-// Handle XBMC actions such as next preset, lock preset, album art changed etc
-//-----------------------------------------------------------------------------
-bool OnAction(long flags, const void *param)
-{
-  bool ret = false;
-  
-  if (flags == VIS_ACTION_LOAD_PRESET && param)
-  {
-    int pindex = *((int *)param);
-	plugin.loadPreset(pindex);
-	
-    ret = true;
-  }
-//   else if (flags == VIS_ACTION_NEXT_PRESET)
-//   {
-// //    switchPreset(ALPHA_NEXT, SOFT_CUT);
-//     if (!globalPM->isShuffleEnabled())
-//       globalPM->key_handler(PROJECTM_KEYDOWN, PROJECTM_K_n, PROJECTM_KMOD_CAPS); //ignore PROJECTM_KMOD_CAPS
-//     else
-//       globalPM->key_handler(PROJECTM_KEYDOWN, PROJECTM_K_r, PROJECTM_KMOD_CAPS); //ignore PROJECTM_KMOD_CAPS
-//     ret = true;
-//   }
-//   else if (flags == VIS_ACTION_PREV_PRESET)
-//   {
-// //    switchPreset(ALPHA_PREVIOUS, SOFT_CUT);
-//     if (!globalPM->isShuffleEnabled())
-//       globalPM->key_handler(PROJECTM_KEYDOWN, PROJECTM_K_p, PROJECTM_KMOD_CAPS); //ignore PROJECTM_KMOD_CAPS
-//     else
-//       globalPM->key_handler(PROJECTM_KEYDOWN, PROJECTM_K_r, PROJECTM_KMOD_CAPS); //ignore PROJECTM_KMOD_CAPS
-// 
-//     ret = true;
-//   }
-//   else if (flags == VIS_ACTION_RANDOM_PRESET)
-//   {
-//     globalPM->setShuffleEnabled(g_configPM.shuffleEnabled);
-//     ret = true;
-//   }
-//   else if (flags == VIS_ACTION_LOCK_PRESET)
-//   {
-//     globalPM->setPresetLock(!globalPM->isPresetLocked());
-//     unsigned preset;
-//     globalPM->selectedPresetIndex(preset);
-//     globalPM->selectPreset(preset);
-//     ret = true;
-//   }
-  
-  return ret;
-}
-
 //-- GetPresets ---------------------------------------------------------------
-// Return a list of presets to XBMC for display
+// Return a list of presets to Kodi for display
 //-----------------------------------------------------------------------------
-unsigned int GetPresets(char ***preset_names)
+bool CVisualizationNastyFFT::GetPresets(std::vector<std::string>& presets)
 {
-  vector<string> names;
-  
-  names.push_back("Standard");
-  names.push_back("Hero");
-  names.push_back("Flames");
-  
-  int g_numPresets = names.size();
-  
-  if (g_numPresets > 0)
-  {
-    g_presets = (char**) malloc(sizeof(char*)*g_numPresets);
-    for (unsigned i = 0; i < g_numPresets; i++)
-    {
-      g_presets[i] = (char*) malloc(strlen(names.at(i).c_str())+2);
-      if (g_presets[i])
-        strcpy(g_presets[i], names.at(i).c_str());
-    }
-    *preset_names = g_presets;
-  }
-  return g_numPresets;
-
+  for (auto preset : g_presets)
+    presets.push_back(preset);
+  return true;
 }
 
-//-- GetPreset ----------------------------------------------------------------
+//-- LoadPreset -----------------------------------------------------------------
+// Handle Kodi LoadPreset action
+//-----------------------------------------------------------------------------
+bool CVisualizationNastyFFT::LoadPreset(int select)
+{
+  plugin.loadPreset(select % g_presets.size());
+
+  return true;
+}
+
+//-- GetActivePreset ----------------------------------------------------------------
 // Return the index of the current playing preset
 //-----------------------------------------------------------------------------
-unsigned GetPreset()
+int CVisualizationNastyFFT::GetActivePreset()
 {
   return plugin.presetIndex();
-}
-
-//-- IsLocked -----------------------------------------------------------------
-// Returns true if this add-on use settings
-//-----------------------------------------------------------------------------
-bool IsLocked()
-{
-  return false;
-}
-
-//-- GetStatus ---------------------------------------------------------------
-// Returns the current Status of this visualisation
-// !!! Add-on master function !!!
-//-----------------------------------------------------------------------------
-ADDON_STATUS ADDON_GetStatus()
-{
-  return ADDON_STATUS_OK;
 }
 
 //-- SetSetting ---------------------------------------------------------------
 // Set a specific Setting value (called from XBMC)
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-ADDON_STATUS ADDON_SetSetting(const char *strSetting, const void* value)
+ADDON_STATUS CVisualizationNastyFFT::SetSetting(const std::string& settingName, const kodi::CSettingValue& settingValue)
 {
-  if (!strSetting || !value) return ADDON_STATUS_UNKNOWN;
+  if (settingName.empty() || settingValue.empty())
+    return ADDON_STATUS_UNKNOWN;
 
   ScenePreset *priv = plugin.scenePreset();
-   
-  if (strcmp(strSetting, "scale")==0) {
-	  int val = *(int*)value;
-	  priv->scale = 1+val;
-  }
-  else if (strcmp(strSetting, "invert")==0) {
-	  priv->cinvert = *(bool*)value;
-  }
-  else if (strcmp(strSetting, "transient")==0) {
-	  priv->tranzient = *(bool*)value;
-  }
-  else if (strcmp(strSetting, "cammove")==0) {
-	  priv->cammove = *(bool*)value;
-  }
-  else if (strcmp(strSetting, "flatten")==0) {
-	  priv->flatten = *(bool*)value;
-  }
-  else if (strcmp(strSetting, "eye_y")==0) {
-	  int val = *(int*)value;
-	  priv->cam_coords.y =  val;
-	  
-  }
-  else if (strcmp(strSetting, "eye_z")==0) {
-	  int val = *(int*)value;
-	  priv->cam_coords.z = val ;
-	  
-  }
-  else if (strcmp(strSetting, "brick_space_z")==0) {
-	  int val = *(int*)value;
-	  priv->step_z = val / 10.0f;
-  }
-  else if (strcmp(strSetting, "brick_shiness")==0) {
-	  int val = *(int*)value;
-	  priv->shiness = val / 100.0f;
-  }
-  else if (strcmp(strSetting, "floor_rotate_x")==0) {
-	
-	  int val = *(int*)value;
-	  priv->rot_x = 0 + (val*36);
-  }
-  else {
-	return ADDON_STATUS_UNKNOWN;
-	
-  }
+
+  if (settingName == "scale")
+    priv->scale = (1 + settingValue.GetInt());
+  else if (settingName == "invert")
+    priv->cinvert = settingValue.GetBoolean();
+  else if (settingName == "transient")
+    priv->tranzient = settingValue.GetBoolean();
+  else if (settingName == "cammove")
+    priv->cammove = settingValue.GetBoolean();
+  else if (settingName == "flatten")
+    priv->flatten = settingValue.GetBoolean();
+  else if (settingName == "eye_y")
+    priv->cam_coords.y = settingValue.GetInt();
+  else if (settingName == "eye_z")
+    priv->cam_coords.z = settingValue.GetInt();
+  else if (settingName == "brick_space_z")
+    priv->step_z = (settingValue.GetInt() / 10.0f);
+  else if (settingName == "brick_shiness")
+    priv->shiness = (settingValue.GetInt() / 100.0f);
+  else if (settingName == "floor_rotate_x")
+    priv->rot_x = (0 + (settingValue.GetInt() * 36));
+  else
+    return ADDON_STATUS_UNKNOWN;
   return ADDON_STATUS_OK;
 }
 
-}
+
+ADDONCREATOR(CVisualizationNastyFFT) // Don't touch this!
