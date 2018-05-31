@@ -153,7 +153,7 @@ void NastyFFT::setSize(int w, int h)
 	width = w;
 	height = h;
 }
-void NastyFFT::scopeEvent(float *data,  int bands)
+void NastyFFT::scopeEvent(const float *data,  int bands)
 {
   
 	register int i,c;
